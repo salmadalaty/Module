@@ -26,6 +26,9 @@ private:
     std::vector<int> generateJacobsthalNumbers(int limit);
 
 public:
+~PmergeMe();
+PmergeMe(const PmergeMe& other);
+PmergeMe& operator=(const PmergeMe& other);
     PmergeMe(int argc, char** argv);
     void sortAndDisplay();
 };

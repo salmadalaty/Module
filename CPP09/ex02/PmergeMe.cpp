@@ -27,6 +27,24 @@ PmergeMe::PmergeMe(int argc, char** argv) {
     }
 }
 
+PmergeMe::~PmergeMe() {
+
+}
+
+PmergeMe::PmergeMe(const PmergeMe& other) {
+  
+    this->vec = other.vec;
+    this->deq = other.deq;
+}
+
+PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
+    if (this != &other) { 
+
+        this->vec = other.vec;
+        this->deq = other.deq;
+    }
+    return *this; 
+}
 
 std::vector<int> PmergeMe::generateJacobsthalNumbers(int limit) {
     std::vector<int> jacobsthal;

@@ -14,10 +14,33 @@ void BitcoinExchange::processInputFile(const std::string &filename)
     }
 
     std::string line;
-    getline(file, line);
 
+    // Read the first line (expected to be a header)
+    if (!getline(file, line))
+    {
+        std::cerr << "Error: empty file." << std::endl;
+        return;
+    }
+
+    // Check if the first line is the expected header
+    std::stringstream ss(line);
+    std::string firstWord, separator, secondWord;
+
+    ss >> firstWord >> separator >> secondWord;
+
+    if (firstWord != "date" || separator != "|" || secondWord != "value")
+    {
+        std::cerr << "Error: missing or invalid header. Expected: 'date | value'" << std::endl;
+        return;
+    }
+
+    // Process the rest of the file
     while (getline(file, line))
     {
+        // Trim spaces and ignore empty lines
+        if (line.find_first_not_of(" \t\r\n") == std::string::npos)
+            continue;
+
         std::stringstream ss(line);
         std::string date, valueStr;
 
@@ -27,8 +50,9 @@ void BitcoinExchange::processInputFile(const std::string &filename)
             continue;
         }
 
-        date = date.substr(0, date.find_last_not_of(" ") + 1);
-        valueStr = valueStr.substr(valueStr.find_first_not_of(" "));
+        // Trim spaces
+        date.erase(date.find_last_not_of(" \t\r\n") + 1);
+        valueStr.erase(0, valueStr.find_first_not_of(" \t\r\n"));
 
         if (!isValidDate(date))
         {
@@ -60,10 +84,20 @@ bool BitcoinExchange::isValidDate(const std::string &date) const
         return false;
 
     int year, month, day;
-    if (sscanf(date.c_str(), "%d-%d-%d", &year, &month, &day) != 3) // extract
+    if (sscanf(date.c_str(), "%d-%d-%d", &year, &month, &day) != 3)
         return false;
 
-    if (month < 1 || month > 12 || day < 1 || day > 31)
+    if (year < 2000 || year > 2099 || month < 1 || month > 12 || day < 1 || day > 31)
+        return false;
+
+    static const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (month == 2)
+    {
+        bool leapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+        if (day > 28 + leapYear)
+            return false;
+    }
+    else if (day > daysInMonth[month - 1])
         return false;
 
     return true;

@@ -6,13 +6,11 @@
 #include <stdexcept>
 
 
-
-
-    PmergeMe::PmergeMe(int argc, char **argv) {
+PmergeMe::PmergeMe(int argc, char **argv) {
         for (int i = 1; i < argc; ++i) {
             for (size_t j = 0; j < std::strlen(argv[i]); ++j) {
                 if (!std::isdigit(argv[i][j])) {
-                    throw InvalidInputException();  // Throw exception instead of exit
+                    throw InvalidInputException(); 
                 }
             }
     
@@ -25,7 +23,7 @@
             }
             catch (std::exception &e) {
                 std::cerr << "Error: Invalid input" << std::endl;
-                throw;  // Rethrow to propagate the exception
+                throw;
             }
         }
     }
@@ -88,8 +86,12 @@ void PmergeMe::sortPairs(std::vector<std::pair<int, int> > &pairs) {
 }
 
 void PmergeMe::insertElement(std::vector<int> &mainChain, int element) {
-    int pos = binarySearchInsertPosition(mainChain, element);
-    mainChain.insert(mainChain.begin() + pos, element);
+    // Check if element is already present in the mainChain
+    if (std::find(mainChain.begin(), mainChain.end(), element) == mainChain.end()) {
+        // Insert element only if it's not already in the mainChain
+        int pos = binarySearchInsertPosition(mainChain, element);
+        mainChain.insert(mainChain.begin() + pos, element);
+    }
 }
 
 void PmergeMe::insertElement(std::deque<int> &mainChain, int element) {
@@ -120,9 +122,15 @@ void PmergeMe::mergeInsertSortVector(std::vector<int> &arr) {
     mergeInsertSortVector(mainChain);
 
     std::vector<int> jacobsthal = generateJacobsthalNumbers(pendChain.size());
-for (size_t i = 0; i < pendChain.size(); ++i) {
-    insertElement(mainChain, pendChain[i]);
-}
+    for (size_t i = 0; i < jacobsthal.size(); ++i) {
+        size_t index = jacobsthal[i];
+        if (index < pendChain.size()) {
+            insertElement(mainChain, pendChain[index]);
+        }
+    }
+    for (size_t i = jacobsthal.size(); i < pendChain.size(); ++i) {
+        insertElement(mainChain, pendChain[i]);
+    }
     arr = mainChain;
 }
 

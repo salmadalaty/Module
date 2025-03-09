@@ -4,34 +4,40 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
-#include <stdexcept>
-#include <iostream>
 #include <ctime>
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
 
 class PmergeMe
 {
-private:
-    std::vector<int> vec;
-    std::deque<int> deq;
-
-    void mergeInsertSortVector(std::vector<int> &arr);
-    void mergeInsertSortDeque(std::deque<int> &arr);
-
-    void sortPairs(std::vector<std::pair<int, int> > &pairs);
-    void insertElement(std::vector<int> &mainChain, int element);
-    void insertElement(std::deque<int> &mainChain, int element);
-
-    std::vector<int> generateJacobsthalNumbers(int limit);
-
-
 public:
-template <typename T>
-int binarySearchInsertPosition(const T &arr, int target);
+    // Constructor and Destructor
+    PmergeMe();
     ~PmergeMe();
-    PmergeMe(const PmergeMe &other);
-    PmergeMe &operator=(const PmergeMe &other);
-    PmergeMe(int argc, char **argv);
-    void sortAndDisplay();
+
+    // Public methods
+    void sortAndDisplay(std::vector<int> &vec, std::deque<int> &deq);
+
+private:
+    // Helper methods
+    template <typename Container>
+    void mergeSort(Container &container, int left, int right);
+
+    template <typename Container>
+    void merge(Container &container, int left, int mid, int right);
+
+    std::vector<int> generateJacobsthalNumbers(int n);
+
+    template <typename Container>
+    void binarySearchAndInsert(Container &data, int value);
+
+    template <typename Container>
+    void fordJohnsonSort(Container &container);
+
+    // Display methods
+    void displaySequence(const std::string &message, const std::vector<int> &sequence);
+    void displayTime(const std::string &containerType, size_t size, double time);
     class InvalidInputException : public std::exception
     {
     public:
@@ -39,8 +45,7 @@ int binarySearchInsertPosition(const T &arr, int target);
         {
             return "Invalid input";
         }
-    };  
-    
+    };
 };
 
 #endif

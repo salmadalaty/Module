@@ -36,6 +36,7 @@ private:
     void fordJohnsonSort(Container &container);
 
     // Display methods
+    void displaySequence(const std::string &message, const std::deque<int> &sequence);
     void displaySequence(const std::string &message, const std::vector<int> &sequence);
     void displayTime(const std::string &containerType, size_t size, double time);
     class InvalidInputException : public std::exception

@@ -2,6 +2,20 @@
 
 BitcoinExchange::BitcoinExchange() {}
 
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &other)
+{
+    exchangeRates = other.exchangeRates;
+}
+
+BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other)
+{
+    if (this != &other)
+    {
+        exchangeRates = other.exchangeRates;
+    }
+    return *this;
+}
+
 BitcoinExchange::~BitcoinExchange() {}
 
 void BitcoinExchange::processInputFile(const std::string &filename)
@@ -25,7 +39,6 @@ void BitcoinExchange::processInputFile(const std::string &filename)
     // Check if the first line is the expected header
     std::stringstream ss(line);
     std::string firstWord, separator, secondWord;
-
     ss >> firstWord >> separator >> secondWord;
 
     if (firstWord != "date" || separator != "|" || secondWord != "value")
@@ -37,7 +50,6 @@ void BitcoinExchange::processInputFile(const std::string &filename)
     // Process the rest of the file
     while (getline(file, line))
     {
-        // Trim spaces and ignore empty lines
         if (line.find_first_not_of(" \t\r\n") == std::string::npos)
             continue;
 
@@ -86,11 +98,12 @@ bool BitcoinExchange::isValidDate(const std::string &date) const
     int year, month, day;
     if (sscanf(date.c_str(), "%d-%d-%d", &year, &month, &day) != 3)
         return false;
-
-    if (year < 2000 || year > 2099 || month < 1 || month > 12 || day < 1 || day > 31)
+    // year < 2000 || year > 2099 ||
+    if (month < 1 || month > 12 || day < 1 || day > 31)
         return false;
 
     static const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
     if (month == 2)
     {
         bool leapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
@@ -111,7 +124,7 @@ bool BitcoinExchange::isValidValue(const std::string &value) const
 
 double BitcoinExchange::getExchangeRate(const std::string &date) const
 {
-    std::map<std::string, double>::const_iterator it = exchangeRates.lower_bound(date);
+    std::map<std::string, double>::const_iterator it = exchangeRates.lower_bound(date); // If date does not exist, it will point to the next available date in the map.
 
     if (it == exchangeRates.end() || it->first != date)
     {
@@ -136,7 +149,7 @@ void BitcoinExchange::loadExchangeRates(const std::string &filename)
     }
 
     std::string line;
-    getline(file, line);
+    getline(file, line); // Skip header
 
     while (getline(file, line))
     {

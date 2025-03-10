@@ -1,7 +1,7 @@
 #ifndef RPN_HPP
 #define RPN_HPP
 
-#include <cstdlib> // For atoi functio
+#include <cstdlib>
 #include <string>
 #include <stack>
 #include <stdexcept>
@@ -12,6 +12,11 @@
 class RPN
 {
 public:
+    RPN();
+    RPN(const RPN &other);
+    RPN &operator=(const RPN &other);
+    ~RPN();
+
     int evaluate(const std::string &expression);
 };
 
